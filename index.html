@@ -1,27 +1,237 @@
 <html>
 <head>
-    <title>Mening Botim</title>
+    <title>Penalti Go'l Urish</title>
     <style>
         body {
-            background: lightblue;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: white;
             text-align: center;
-            padding: 50px;
+            padding: 10px;
             font-family: Arial;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            font-size: 16px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .stadium {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin: 20px auto;
+            background: linear-gradient(45deg, #2e8b57, #3cb371);
+            border: 3px solid white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .goal {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: transparent;
+            border-top: 3px solid white;
+        }
+        .goal-area {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .goal-zone {
+            width: 60px;
+            height: 50px;
+            border: 2px dashed rgba(255,255,255,0.5);
+            margin: 0 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .goal-zone:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .ball {
+            position: absolute;
+            top: 50px;
+            left: 150px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.5s ease;
+        }
+        .goalkeeper {
+            position: absolute;
+            bottom: 60px;
+            left: 120px;
+            width: 60px;
+            height: 40px;
+            background: #ff6b6b;
+            border-radius: 50% 50% 0 0;
+            transition: all 0.3s ease;
         }
         button {
-            background: blue;
-            color: white;
-            padding: 15px 30px;
+            background: #ffd93d;
+            color: #333;
+            padding: 12px 25px;
             border: none;
-            border-radius: 10px;
-            font-size: 20px;
+            border-radius: 8px;
+            font-size: 16px;
             margin: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        .result {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px;
+            min-height: 30px;
+        }
+        .shot-animation {
+            animation: shoot 0.5s ease;
+        }
+        @keyframes shoot {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <h1>Salom Telegram! 👋</h1>
-    <p>Bu mening birinchi mini-app im</p>
-    <button onclick="alert('Ishlayapti! 🎉')">Bosing</button>
+    <div class="container">
+        <h1>⚽ PENALTI GO'L URISH</h1>
+        <p>Darvoza burchagini tanlang va gol uring!</p>
+        
+        <div class="game-info">
+            <div>Gollar: <span id="goals">0</span></div>
+            <div>Urinish: <span id="attempts">0</span></div>
+            <div>Daraja: <span id="level">1</span></div>
+        </div>
+        
+        <div class="stadium">
+            <div class="goal"></div>
+            <div class="goal-area">
+                <div class="goal-zone" onclick="shoot(0)">⬅️</div>
+                <div class="goal-zone" onclick="shoot(1)">⏺️</div>
+                <div class="goal-zone" onclick="shoot(2)">➡️</div>
+            </div>
+            <div class="ball" id="ball"></div>
+            <div class="goalkeeper" id="goalkeeper"></div>
+        </div>
+        
+        <div class="result" id="result"></div>
+        <button onclick="startGame()">YANGI O'YIN</button>
+    </div>
+
+    <script>
+        let goals = 0;
+        let attempts = 0;
+        let level = 1;
+        let canShoot = true;
+
+        const goalZones = [0, 1, 2]; // 0: chap, 1: markaz, 2: o'ng
+        const zonePositions = [90, 150, 210]; // Ball qo'yiladigan pozitsiyalar
+
+        function shoot(zone) {
+            if (!canShoot) return;
+            
+            canShoot = false;
+            attempts++;
+            document.getElementById('attempts').textContent = attempts;
+            
+            const ball = document.getElementById('ball');
+            const goalkeeper = document.getElementById('goalkeeper');
+            const result = document.getElementById('result');
+            
+            // Darvozbon harakatini tasodifiy tanlash
+            const keeperMove = Math.floor(Math.random() * 3);
+            goalkeeper.style.left = (120 + (keeperMove - 1) * 30) + 'px';
+            
+            // To'pni harakatlantirish
+            ball.style.left = zonePositions[zone] + 'px';
+            ball.style.top = '180px';
+            
+            // Animatsiya
+            ball.classList.add('shot-animation');
+            
+            setTimeout(() => {
+                // Gol yoki o'tkazib yuborishni tekshirish
+                if (zone !== keeperMove) {
+                    // GOL!
+                    goals++;
+                    document.getElementById('goals').textContent = goals;
+                    result.textContent = '🎉 GOOL! Ajoyib zarba!';
+                    result.style.color = '#4ecdc4';
+                    
+                    // Daraja oshirish
+                    if (goals % 3 === 0) {
+                        level++;
+                        document.getElementById('level').textContent = level;
+                        result.textContent += ` Daraja ${level} ga oshdi!`;
+                    }
+                } else {
+                    // Darvozban ushladi
+                    result.textContent = '❌ Darvozban ushladi!';
+                    result.style.color = '#ff6b6b';
+                }
+                
+                // To'pni qaytarish
+                setTimeout(() => {
+                    ball.style.left = '150px';
+                    ball.style.top = '50px';
+                    ball.classList.remove('shot-animation');
+                    goalkeeper.style.left = '120px';
+                    canShoot = true;
+                }, 1000);
+                
+            }, 500);
+        }
+
+        function startGame() {
+            goals = 0;
+            attempts = 0;
+            level = 1;
+            canShoot = true;
+            
+            document.getElementById('goals').textContent = '0';
+            document.getElementById('attempts').textContent = '0';
+            document.getElementById('level').textContent = '1';
+            document.getElementById('result').textContent = '';
+            
+            const ball = document.getElementById('ball');
+            const goalkeeper = document.getElementById('goalkeeper');
+            
+            ball.style.left = '150px';
+            ball.style.top = '50px';
+            goalkeeper.style.left = '120px';
+        }
+
+        // O'yinni boshlash
+        startGame();
+    </script>
 </body>
 </html>
