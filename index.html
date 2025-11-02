@@ -1,13 +1,13 @@
 <html>
 <head>
-    <title>3D Penalti - Ronaldo vs Buffon</title>
+    <title>Real 3D Penalti - Ronaldo vs Buffon</title>
     <style>
         body {
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-align: center;
             padding: 10px;
-            font-family: Arial;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             min-height: 100vh;
         }
@@ -15,203 +15,278 @@
             max-width: 100%;
             margin: 0 auto;
         }
-        h1 {
-            font-size: 22px;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 15px;
         }
-        .player-info {
+        h1 {
+            font-size: 20px;
+            margin: 5px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .vs-container {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin: 10px 0;
-            font-size: 14px;
             background: rgba(255,255,255,0.1);
             padding: 8px;
-            border-radius: 8px;
+            border-radius: 10px;
         }
-        .stadium-3d {
+        .player {
+            text-align: center;
+            flex: 1;
+        }
+        .player-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid gold;
+            margin: 0 auto 5px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .player-name {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .stadium-real {
             position: relative;
             width: 320px;
-            height: 220px;
+            height: 200px;
             margin: 15px auto;
-            background: linear-gradient(180deg, #2e8b57 0%, #1e6b45 100%);
+            background: 
+                radial-gradient(ellipse at center, #2e8b57 0%, #1e6b45 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.1) 20px);
             border: 4px solid #8B4513;
             border-radius: 15px;
             overflow: hidden;
-            perspective: 600px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
-        .goal-3d {
+        .goal-real {
             position: absolute;
             bottom: 0;
             width: 100%;
             height: 70px;
             background: linear-gradient(0deg, #8B4513, #A0522D);
-            border-top: 4px solid white;
             display: flex;
             justify-content: space-around;
             align-items: flex-start;
-            padding-top: 10px;
+            padding-top: 15px;
         }
-        .goal-post {
-            width: 8px;
-            height: 50px;
-            background: white;
-            border-radius: 4px;
-        }
-        .goal-net {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
+        .goal-zone-real {
+            width: 65px;
             height: 40px;
-            background: 
-                linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.3) 50%, transparent 51%),
-                linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.3) 50%, transparent 51%);
-            background-size: 20px 20px;
-        }
-        .goal-zone-3d {
-            width: 70px;
-            height: 45px;
-            border: 2px solid rgba(255,255,255,0.6);
-            margin: 0 3px;
+            border: 2px solid rgba(255,255,255,0.8);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            transform: translateZ(10px);
-        }
-        .goal-zone-3d:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateZ(20px) scale(1.1);
-        }
-        .ball-3d {
-            position: absolute;
-            top: 80px;
-            left: 160px;
-            width: 18px;
-            height: 18px;
-            background: radial-gradient(circle at 30% 30%, white, #ccc);
-            border-radius: 50%;
-            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-        .goalkeeper-3d {
-            position: absolute;
-            bottom: 65px;
-            left: 140px;
-            width: 40px;
-            height: 60px;
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
-            border-radius: 40% 40% 0 0;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            z-index: 5;
-        }
-        .shooter {
-            position: absolute;
-            top: 60px;
-            left: 160px;
-            width: 30px;
-            height: 50px;
-            background: linear-gradient(45deg, #c00, #900);
-            border-radius: 40% 40% 0 0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            z-index: 5;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .goal-zone-real:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        .goal-zone-real::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .goal-zone-real:hover::before {
+            opacity: 1;
+        }
+        .ball-real {
+            position: absolute;
+            top: 70px;
+            left: 160px;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #cccccc);
+            border-radius: 50%;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.5),
+                inset -3px -3px 5px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+        .goalkeeper-real {
+            position: absolute;
+            bottom: 60px;
+            left: 140px;
+            width: 45px;
+            height: 70px;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            border-radius: 45% 45% 0 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 15;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .shooter-real {
+            position: absolute;
+            top: 50px;
+            left: 160px;
+            width: 35px;
+            height: 55px;
+            background: linear-gradient(45deg, #c00, #900);
+            border-radius: 45% 45% 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 15;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
         }
         button {
             background: linear-gradient(45deg, #ff6b6b, #ffd93d);
             color: #333;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 25px;
             font-size: 14px;
-            margin: 8px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
+            min-width: 120px;
         }
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
-        .result-3d {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 12px;
-            min-height: 25px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
-        .stats {
+        .stats-real {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            margin: 10px 0;
-            font-size: 12px;
-        }
-        .stat-item {
+            gap: 8px;
+            margin: 15px 0;
             background: rgba(255,255,255,0.1);
-            padding: 5px;
-            border-radius: 5px;
+            padding: 10px;
+            border-radius: 10px;
         }
-        @keyframes shootBall {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
+        .stat-item-real {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+        .result-real {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px;
+            min-height: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+        .celebration-real {
+            animation: celebrate 0.6s ease 3;
         }
         @keyframes celebrate {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(10deg); }
+            25% { transform: translateY(-15px) rotate(-5deg); }
+            75% { transform: translateY(-15px) rotate(5deg); }
         }
-        .celebration {
-            animation: celebrate 0.5s ease 3;
+        @keyframes ballSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .net {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 35px;
+            background: 
+                linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.4) 50%, transparent 52%),
+                linear-gradient(0deg, transparent 48%, rgba(255,255,255,0.4) 50%, transparent 52%);
+            background-size: 15px 15px;
+            z-index: 5;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚽ 3D PENALTI - RONALDO vs BUFFON</h1>
-        
-        <div class="player-info">
-            <div>👤 RONALDO</div>
-            <div>VS</div>
-            <div>🧤 BUFFON</div>
+        <div class="header">
+            <h1>⚽ REAL 3D PENALTI</h1>
         </div>
         
-        <div class="stadium-3d">
-            <div class="goal-3d">
-                <div class="goal-post"></div>
-                <div class="goal-zone-3d" onclick="shoot(0)">⬅️</div>
-                <div class="goal-zone-3d" onclick="shoot(1)">⏺️</div>
-                <div class="goal-zone-3d" onclick="shoot(2)">➡️</div>
-                <div class="goal-post"></div>
+        <div class="vs-container">
+            <div class="player">
+                <div class="player-img">⚽</div>
+                <div class="player-name">RONALDO</div>
             </div>
-            <div class="goal-net"></div>
-            <div class="ball-3d" id="ball"></div>
-            <div class="goalkeeper-3d" id="goalkeeper">🧤</div>
-            <div class="shooter">👤</div>
+            <div style="font-size: 24px; font-weight: bold;">VS</div>
+            <div class="player">
+                <div class="player-img">🧤</div>
+                <div class="player-name">BUFFON</div>
+            </div>
         </div>
         
-        <div class="stats">
-            <div class="stat-item">Gollar: <span id="goals">0</span></div>
-            <div class="stat-item">Urinish: <span id="attempts">0</span></div>
-            <div class="stat-item">Foiz: <span id="percentage">0%</span></div>
+        <div class="stadium-real">
+            <div class="goal-real">
+                <div class="goal-zone-real" onclick="shoot(0)">⬅️ CHAP</div>
+                <div class="goal-zone-real" onclick="shoot(1)">⏺️ MARKAZ</div>
+                <div class="goal-zone-real" onclick="shoot(2)">➡️ O'NG</div>
+            </div>
+            <div class="net"></div>
+            <div class="ball-real" id="ball"></div>
+            <div class="goalkeeper-real" id="goalkeeper">🧤</div>
+            <div class="shooter-real">👤</div>
         </div>
         
-        <div class="result-3d" id="result"></div>
-        <button onclick="startGame()">🔄 YANGI O'YIN</button>
-        <button onclick="specialShot()">💫 MAXSUS ZARBA</button>
+        <div class="stats-real">
+            <div class="stat-item-real">
+                <div>Gollar</div>
+                <div class="stat-value" id="goals">0</div>
+            </div>
+            <div class="stat-item-real">
+                <div>Urinish</div>
+                <div class="stat-value" id="attempts">0</div>
+            </div>
+            <div class="stat-item-real">
+                <div>Foiz</div>
+                <div class="stat-value" id="percentage">0%</div>
+            </div>
+        </div>
+        
+        <div class="result-real" id="result">Burchak tanlang va zarba bering!</div>
+        
+        <div class="controls">
+            <button onclick="startGame()">🔄 Yangi O'yin</button>
+            <button onclick="specialShot()" id="specialBtn">💫 Maxsus Zarba (3)</button>
+        </div>
     </div>
 
     <script>
@@ -220,7 +295,7 @@
         let specialShots = 3;
         let canShoot = true;
 
-        const zonePositions = [100, 160, 220];
+        const zonePositions = [95, 160, 225];
 
         function shoot(zone) {
             if (!canShoot) return;
@@ -234,54 +309,48 @@
             
             // Buffon harakatini tasodifiy tanlash
             const keeperMove = Math.floor(Math.random() * 3);
-            goalkeeper.style.left = (140 + (keeperMove - 1) * 40) + 'px';
+            goalkeeper.style.left = (140 + (keeperMove - 1) * 45) + 'px';
             
             // To'pni harakatlantirish
             ball.style.left = zonePositions[zone] + 'px';
-            ball.style.top = '190px';
-            
-            // Animatsiya
-            ball.style.animation = 'shootBall 0.6s ease';
+            ball.style.top = '170px';
+            ball.style.animation = 'ballSpin 0.8s ease';
             
             setTimeout(() => {
                 if (zone !== keeperMove) {
-                    // GOL! Ronaldo bayram qiladi
+                    // GOL!
                     goals++;
                     result.textContent = '🎉 GOOL! RONALDO BAYRAM QILADI!';
                     result.style.color = '#4ecdc4';
-                    result.classList.add('celebration');
+                    result.classList.add('celebration-real');
                     
                     // Darvozbanni silkish
                     goalkeeper.style.animation = 'celebrate 0.5s ease';
                 } else {
                     // Buffon ushladi!
-                    result.textContent = '❌ BUFFON USHLADI! Ajoyib seyv!';
+                    result.textContent = '❌ BUFFON AJOYIB SEYV!';
                     result.style.color = '#ff6b6b';
                     goalkeeper.textContent = '🎯';
                 }
                 
-                // Yangilash
-                document.getElementById('goals').textContent = goals;
-                document.getElementById('attempts').textContent = attempts;
-                document.getElementById('percentage').textContent = 
-                    Math.round((goals/attempts) * 100) + '%';
+                updateStats();
                 
-                // Reset
                 setTimeout(() => {
-                    resetGame();
-                }, 1500);
+                    resetAfterShot();
+                }, 2000);
                 
-            }, 600);
+            }, 800);
         }
 
         function specialShot() {
             if (specialShots > 0 && canShoot) {
                 specialShots--;
-                // Maxsus zarba - 80% gol urish imkoniyati
-                const zone = Math.floor(Math.random() * 3);
-                const keeperMiss = Math.random() < 0.8; // 80% gol
+                document.getElementById('specialBtn').textContent = `💫 Maxsus (${specialShots})`;
                 
-                shootSpecial(zone, keeperMiss);
+                const zone = Math.floor(Math.random() * 3);
+                const isGoal = Math.random() < 0.8; // 80% gol
+                
+                shootSpecial(zone, isGoal);
             }
         }
 
@@ -293,53 +362,60 @@
             const goalkeeper = document.getElementById('goalkeeper');
             const result = document.getElementById('result');
             
-            // Maxsus zarba animatsiyasi
+            // Maxsus zarba effekti
             ball.style.background = 'radial-gradient(circle at 30% 30%, #ffd93d, #ff6b6b)';
             
             if (isGoal) {
-                goalkeeper.style.left = (140 + (1 - zone) * 40) + 'px'; // Noto'g'ri tomonga
+                // Buffon noto'g'ri tomonga sakraydi
+                const wrongZone = (zone + 1) % 3;
+                goalkeeper.style.left = (140 + (wrongZone - 1) * 45) + 'px';
+                
                 setTimeout(() => {
                     goals++;
                     result.textContent = '🔥 SUPER ZARBA! GOOL!';
                     result.style.color = '#ffd93d';
-                }, 300);
+                }, 400);
             } else {
-                goalkeeper.style.left = (140 + (zone - 1) * 40) + 'px';
+                // Buffon to'g'ri ushlaydi
+                goalkeeper.style.left = (140 + (zone - 1) * 45) + 'px';
                 setTimeout(() => {
-                    result.textContent = '💥 BUFFON SUPER SEYV!';
+                    result.textContent = '💥 BUFFON SUPER SEYV QILDI!';
                     result.style.color = '#ff6b6b';
-                }, 300);
+                }, 400);
             }
             
             ball.style.left = zonePositions[zone] + 'px';
-            ball.style.top = '190px';
-            ball.style.animation = 'shootBall 0.8s ease';
+            ball.style.top = '170px';
+            ball.style.animation = 'ballSpin 1s ease';
             
             setTimeout(() => {
-                document.getElementById('goals').textContent = goals;
-                document.getElementById('attempts').textContent = attempts;
-                document.getElementById('percentage').textContent = 
-                    Math.round((goals/attempts) * 100) + '%';
-                
+                updateStats();
                 setTimeout(() => {
-                    resetGame();
-                    ball.style.background = 'radial-gradient(circle at 30% 30%, white, #ccc)';
-                }, 1500);
-            }, 800);
+                    resetAfterShot();
+                    ball.style.background = 'radial-gradient(circle at 30% 30%, #ffffff, #cccccc)';
+                }, 2000);
+            }, 1000);
         }
 
-        function resetGame() {
+        function updateStats() {
+            document.getElementById('goals').textContent = goals;
+            document.getElementById('attempts').textContent = attempts;
+            const percentage = attempts > 0 ? Math.round((goals/attempts) * 100) : 0;
+            document.getElementById('percentage').textContent = percentage + '%';
+        }
+
+        function resetAfterShot() {
             const ball = document.getElementById('ball');
             const goalkeeper = document.getElementById('goalkeeper');
             const result = document.getElementById('result');
             
             ball.style.left = '160px';
-            ball.style.top = '80px';
+            ball.style.top = '70px';
             ball.style.animation = '';
             goalkeeper.style.left = '140px';
             goalkeeper.style.animation = '';
             goalkeeper.textContent = '🧤';
-            result.classList.remove('celebration');
+            result.classList.remove('celebration-real');
             canShoot = true;
         }
 
@@ -352,9 +428,11 @@
             document.getElementById('goals').textContent = '0';
             document.getElementById('attempts').textContent = '0';
             document.getElementById('percentage').textContent = '0%';
-            document.getElementById('result').textContent = '';
+            document.getElementById('specialBtn').textContent = '💫 Maxsus Zarba (3)';
+            document.getElementById('result').textContent = 'Burchak tanlang va zarba bering!';
+            document.getElementById('result').style.color = 'white';
             
-            resetGame();
+            resetAfterShot();
         }
 
         startGame();
