@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Puzzle O'yini</title>
+    <title>Nishonni Urish O'yini</title>
     <style>
         body {
             margin: 0;
             padding: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
             text-align: center;
             font-family: Arial;
+            overflow: hidden;
         }
         .header {
             background: rgba(0,0,0,0.3);
@@ -17,47 +18,57 @@
             border-radius: 15px;
             margin-bottom: 15px;
         }
-        .puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            max-width: 300px;
-            margin: 15px auto;
+        .game-container {
+            width: 100%;
+            height: 400px;
+            background: rgba(0,0,0,0.2);
+            border: 3px solid white;
+            border-radius: 15px;
+            margin: 10px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .target {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ff6b6b, #c00);
+            border-radius: 50%;
+            cursor: crosshair;
+            transition: transform 0.1s;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+        .target:hover {
+            transform: scale(1.1);
+        }
+        .target.moving {
+            animation: float 3s ease-in-out infinite;
+        }
+        .crosshair {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 20px;
+        }
+        .stats {
             background: rgba(255,255,255,0.1);
             padding: 10px;
             border-radius: 10px;
+            margin: 10px auto;
+            max-width: 300px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
         }
-        .puzzle-piece {
-            width: 90px;
-            height: 90px;
-            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-            border: 2px solid white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
             font-size: 24px;
-            cursor: grab;
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-        .puzzle-piece:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, #4ecdc4, #556270);
-        }
-        .puzzle-piece.correct {
-            background: linear-gradient(45deg, #00b09b, #96c93d);
-            cursor: default;
-        }
-        .empty-piece {
-            width: 90px;
-            height: 90px;
-            background: rgba(255,255,255,0.2);
-            border: 2px dashed white;
-            border-radius: 8px;
-        }
-        .controls {
-            margin: 20px;
+            color: #ffd93d;
+            font-weight: bold;
         }
         button {
             background: linear-gradient(45deg, #ff6b6b, #ffd93d);
@@ -70,26 +81,6 @@
             margin: 10px;
             font-weight: bold;
         }
-        .stats {
-            background: rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 10px;
-            margin: 10px auto;
-            max-width: 300px;
-        }
-        .win-message {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px;
-            padding: 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            animation: celebrate 0.6s ease 3;
-        }
-        @keyframes celebrate {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
         .level-indicator {
             background: rgba(255,255,255,0.2);
             padding: 5px 15px;
@@ -97,220 +88,251 @@
             display: inline-block;
             margin: 10px;
         }
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #ffd93d;
+            z-index: 100;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(0px) translateX(20px); }
+            75% { transform: translateY(20px) translateX(10px); }
+        }
+        @keyframes hit {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .hit-effect {
+            animation: hit 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🧩 PUZZLE O'YINI</h1>
-        <p>Raqamlarni to'g'ri tartibda joylashtiring!</p>
+        <h1>🎯 NISHONNI URISH O'YINI</h1>
+        <p>Nishonlarni tezda bosing! Vaqt tugamasdan!</p>
         <div class="level-indicator">Daraja: <b id="level">1</b></div>
     </div>
     
     <div class="stats">
-        <div>Harakat: <b id="moves">0</b></div>
-        <div>Vaqt: <b id="timer">0</b> soniya</div>
+        <div class="stat-item">
+            <div>Urish</div>
+            <div class="stat-value" id="score">0</div>
+        </div>
+        <div class="stat-item">
+            <div>O'tkazib</div>
+            <div class="stat-value" id="missed">0</div>
+        </div>
+        <div class="stat-item">
+            <div>Vaqt</div>
+            <div class="stat-value" id="timer">30</div>
+        </div>
     </div>
     
-    <div class="puzzle-container" id="puzzleContainer"></div>
-    
-    <div class="win-message" id="winMessage"></div>
+    <div class="game-container" id="gameContainer">
+        <!-- Nishonlar shu yerga paydo bo'ladi -->
+    </div>
     
     <div class="controls">
-        <button onclick="startGame()">🔄 Yangi O'yin</button>
-        <button onclick="nextLevel()">🚀 Keyingi Daraja</button>
-        <button onclick="showHint()">💡 Maslahat</button>
+        <button onclick="startGame()">🎮 O'yinni Boshlash</button>
+        <button onclick="pauseGame()">⏸️ Pauza</button>
+        <button onclick="resetGame()">🔄 Yangilash</button>
     </div>
 
     <script>
-        let currentLevel = 1;
-        let moves = 0;
-        let timer = 0;
+        let score = 0;
+        let missed = 0;
+        let timer = 30;
+        let level = 1;
+        let gameActive = false;
         let timerInterval;
-        let gameCompleted = false;
+        let targetInterval;
         
-        const levels = {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 0], // 3x3
-            2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0], // 4x4
-            3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 0] // 5x5
-        };
-        
-        const gridSizes = {
-            1: 3,
-            2: 4, 
-            3: 5
-        };
-        
-        function createPuzzle() {
-            const gridSize = gridSizes[currentLevel];
-            const puzzleContainer = document.getElementById('puzzleContainer');
-            puzzleContainer.innerHTML = '';
-            puzzleContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+        function createTarget() {
+            if (!gameActive) return;
             
-            let pieces = [...levels[currentLevel]];
-            pieces = shuffleArray(pieces);
+            const gameContainer = document.getElementById('gameContainer');
+            const target = document.createElement('div');
+            target.className = 'target moving';
             
-            pieces.forEach((number, index) => {
-                const piece = document.createElement('div');
-                
-                if (number === 0) {
-                    piece.className = 'empty-piece';
-                    piece.dataset.number = '0';
-                } else {
-                    piece.className = 'puzzle-piece';
-                    piece.textContent = number;
-                    piece.dataset.number = number;
-                    piece.draggable = true;
+            // Tasodifiy pozitsiya
+            const x = Math.random() * (gameContainer.offsetWidth - 50);
+            const y = Math.random() * (gameContainer.offsetHeight - 50);
+            
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
+            
+            // Nishon tezligi (darajaga qarab)
+            const speed = 2000 + (level * 500); // Daraja oshgani sayin tezlashadi
+            
+            target.addEventListener('click', function() {
+                if (gameActive) {
+                    score++;
+                    document.getElementById('score').textContent = score;
                     
-                    piece.addEventListener('dragstart', (e) => {
-                        if (!gameCompleted) {
-                            e.dataTransfer.setData('text/plain', number);
-                        }
-                    });
+                    // Urilgan effekt
+                    this.classList.add('hit-effect');
+                    this.style.background = 'radial-gradient(circle, #4ecdc4, #00b09b)';
                     
-                    piece.addEventListener('click', () => {
-                        if (!gameCompleted) {
-                            movePiece(piece);
-                        }
-                    });
-                }
-                
-                puzzleContainer.appendChild(piece);
-            });
-        }
-        
-        function movePiece(piece) {
-            const emptyPiece = document.querySelector('.empty-piece');
-            const pieceIndex = Array.from(piece.parentNode.children).indexOf(piece);
-            const emptyIndex = Array.from(emptyPiece.parentNode.children).indexOf(emptyPiece);
-            
-            const gridSize = gridSizes[currentLevel];
-            const pieceRow = Math.floor(pieceIndex / gridSize);
-            const pieceCol = pieceIndex % gridSize;
-            const emptyRow = Math.floor(emptyIndex / gridSize);
-            const emptyCol = emptyIndex % gridSize;
-            
-            // Faqat qo'shni katakchalarga ko'chirish mumkin
-            const isAdjacent = 
-                (Math.abs(pieceRow - emptyRow) === 1 && pieceCol === emptyCol) ||
-                (Math.abs(pieceCol - emptyCol) === 1 && pieceRow === emptyRow);
-            
-            if (isAdjacent) {
-                moves++;
-                document.getElementById('moves').textContent = moves;
-                
-                // Almashish
-                const pieceNumber = piece.dataset.number;
-                const pieceContent = piece.textContent;
-                const pieceClass = piece.className;
-                
-                piece.dataset.number = '0';
-                piece.textContent = '';
-                piece.className = 'empty-piece';
-                piece.draggable = false;
-                
-                emptyPiece.dataset.number = pieceNumber;
-                emptyPiece.textContent = pieceContent;
-                emptyPiece.className = pieceClass;
-                emptyPiece.draggable = true;
-                
-                // Harakatlanish
-                emptyPiece.addEventListener('click', function moveHandler() {
-                    if (!gameCompleted) {
-                        movePiece(emptyPiece);
+                    setTimeout(() => {
+                        this.remove();
+                    }, 500);
+                    
+                    // Daraja oshirish
+                    if (score % 10 === 0) {
+                        levelUp();
                     }
-                });
-                
-                // G'alaba tekshirish
-                checkWin();
-            }
+                }
+            });
+            
+            // Nishonning yo'qolish vaqti
+            setTimeout(() => {
+                if (target.parentNode && gameActive) {
+                    target.remove();
+                    missed++;
+                    document.getElementById('missed').textContent = missed;
+                    
+                    // O'yin tugashi (juda ko'p o'tkazib yuborsa)
+                    if (missed >= 15) {
+                        endGame();
+                    }
+                }
+            }, speed);
+            
+            gameContainer.appendChild(target);
         }
         
-        function checkWin() {
-            const pieces = Array.from(document.querySelectorAll('[data-number]'));
-            const currentOrder = pieces.map(piece => parseInt(piece.dataset.number));
-            const winOrder = levels[currentLevel];
+        function levelUp() {
+            level++;
+            document.getElementById('level').textContent = level;
             
-            const isWin = currentOrder.every((num, index) => num === winOrder[index]);
+            // Yangi daraja xabari
+            const message = document.createElement('div');
+            message.textContent = `🎉 Daraja ${level} ga oshdi!`;
+            message.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(255,255,255,0.9);
+                color: #333;
+                padding: 10px 20px;
+                border-radius: 10px;
+                font-weight: bold;
+                z-index: 50;
+            `;
             
-            if (isWin) {
-                gameCompleted = true;
-                clearInterval(timerInterval);
-                
-                const winMessage = document.getElementById('winMessage');
-                winMessage.innerHTML = `
-                    🎉 TABRIKLAYMAN! PUZZLENI YECHIB BO'LDINGIZ!<br>
-                    Daraja: <b>${currentLevel}</b><br>
-                    Harakatlar: <b>${moves}</b><br>
-                    Vaqt: <b>${timer}</b> soniya
-                `;
-            }
+            document.getElementById('gameContainer').appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 2000);
         }
         
         function startGame() {
-            currentLevel = 1;
-            moves = 0;
-            timer = 0;
-            gameCompleted = false;
+            if (gameActive) return;
             
-            document.getElementById('moves').textContent = '0';
-            document.getElementById('timer').textContent = '0';
+            gameActive = true;
+            score = 0;
+            missed = 0;
+            timer = 30;
+            level = 1;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('missed').textContent = '0';
+            document.getElementById('timer').textContent = '30';
             document.getElementById('level').textContent = '1';
-            document.getElementById('winMessage').innerHTML = '';
             
+            // Vaqt hisobi
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                if (!gameCompleted) {
-                    timer++;
+                if (gameActive) {
+                    timer--;
                     document.getElementById('timer').textContent = timer;
+                    
+                    if (timer <= 0) {
+                        endGame();
+                    }
                 }
             }, 1000);
             
-            createPuzzle();
+            // Nishon yaratish
+            clearInterval(targetInterval);
+            targetInterval = setInterval(createTarget, 800 - (level * 100));
+            
+            // Boshlang'ich nishonlar
+            for (let i = 0; i < 3; i++) {
+                setTimeout(createTarget, i * 500);
+            }
         }
         
-        function nextLevel() {
-            if (currentLevel < 3) {
-                currentLevel++;
-                moves = 0;
-                timer = 0;
-                gameCompleted = false;
-                
-                document.getElementById('moves').textContent = '0';
-                document.getElementById('timer').textContent = '0';
-                document.getElementById('level').textContent = currentLevel;
-                document.getElementById('winMessage').innerHTML = '';
-                
+        function pauseGame() {
+            gameActive = !gameActive;
+            if (!gameActive) {
                 clearInterval(timerInterval);
-                timerInterval = setInterval(() => {
-                    if (!gameCompleted) {
-                        timer++;
-                        document.getElementById('timer').textContent = timer;
-                    }
-                }, 1000);
-                
-                createPuzzle();
+                clearInterval(targetInterval);
             } else {
-                alert("🎊 Siz barcha darajalarni yakunladingiz! Mukammal!");
+                startGame();
             }
         }
         
-        function showHint() {
-            if (!gameCompleted) {
-                alert("💡 Maslahat: Bo'sh katakchani atrofidagi raqamlarni siljiting!");
-            }
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            clearInterval(targetInterval);
+            
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.innerHTML = '';
+            
+            const gameOver = document.createElement('div');
+            gameOver.className = 'game-over';
+            gameOver.innerHTML = `
+                <h2>🎯 O'YIN TUGADI!</h2>
+                <p>Urgan nishonlar: <b>${score}</b></p>
+                <p>O'tkazib yuborilgan: <b>${missed}</b></p>
+                <p>Daraja: <b>${level}</b></p>
+                <p>Yakuniy ball: <b style="color: #ffd93d">${score * level}</b></p>
+                <button onclick="startGame()" style="margin-top: 15px;">🔄 Qayta Boshlash</button>
+            `;
+            
+            gameContainer.appendChild(gameOver);
         }
         
-        function shuffleArray(array) {
-            // Fisher-Yates aralashtirish algoritmi
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+        function resetGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            clearInterval(targetInterval);
+            
+            document.getElementById('gameContainer').innerHTML = '';
+            document.getElementById('score').textContent = '0';
+            document.getElementById('missed').textContent = '0';
+            document.getElementById('timer').textContent = '30';
+            document.getElementById('level').textContent = '1';
         }
+        
+        // Sichqoncha harakatini kuzatish
+        document.addEventListener('mousemove', (e) => {
+            const crosshair = document.querySelector('.crosshair') || document.createElement('div');
+            crosshair.className = 'crosshair';
+            crosshair.textContent = '🎯';
+            crosshair.style.left = (e.pageX - 10) + 'px';
+            crosshair.style.top = (e.pageY - 10) + 'px';
+            
+            if (!document.querySelector('.crosshair')) {
+                document.body.appendChild(crosshair);
+            }
+        });
         
         // O'yinni boshlash
-        startGame();
+        resetGame();
     </script>
 </body>
 </html>
