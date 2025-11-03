@@ -104,30 +104,65 @@
             background: rgba(255, 255, 255, 0.3);
         }
         
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .menu-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 20px;
         }
         
         .menu-item {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 20px;
-            text-align: center;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .menu-item:hover {
             background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-3px);
+        }
+        
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .menu-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .menu-text {
+            font-weight: 500;
+        }
+        
+        .menu-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .claim-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .claim-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .claim-btn.claimed {
+            background: rgba(0, 255, 0, 0.2);
         }
         
         .progress-section {
@@ -156,6 +191,68 @@
             background: linear-gradient(90deg, #ff8a00, #e52e71);
             border-radius: 5px;
             width: 97.3%;
+        }
+        
+        .progress-label-bottom {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .mini-game {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .game-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .game-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-cell:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .game-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .nav-bar {
@@ -272,59 +369,18 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .mini-game {
+        .code-input {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .game-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .game-cell {
-            aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .game-cell:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .game-controls {
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .game-btn {
-            background: rgba(255, 255, 255, 0.2);
             border: none;
+            border-radius: 8px;
+            padding: 10px;
             color: white;
-            padding: 8px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
+            width: 150px;
+            margin-right: 10px;
         }
         
-        .game-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .code-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
         }
     </style>
 </head>
@@ -343,25 +399,51 @@
         <div class="profit-section">
             <div class="profit-label">Profit per hour</div>
             <div class="profit-value">10</div>
-            <button class="profit-button">CLAIM</button>
+            <button class="profit-button" id="claim-profit">CLAIM</button>
         </div>
         
-        <div class="menu-grid">
-            <div class="menu-item">
-                <div class="menu-icon">📅</div>
-                <div>Daily Login</div>
+        <div class="menu-row">
+            <div class="menu-item" id="daily-login">
+                <div class="menu-left">
+                    <div class="menu-icon">📅</div>
+                    <div class="menu-text">Daily Login</div>
+                </div>
+                <div class="menu-right">
+                    <span class="reward-amount">+50 FC</span>
+                    <button class="claim-btn" id="claim-daily">CLAIM</button>
+                </div>
             </div>
-            <div class="menu-item">
-                <div class="menu-icon">🎫</div>
-                <div>Lucky Code</div>
+            
+            <div class="menu-item" id="lucky-code">
+                <div class="menu-left">
+                    <div class="menu-icon">🎫</div>
+                    <div class="menu-text">Lucky Code</div>
+                </div>
+                <div class="menu-right">
+                    <input type="text" class="code-input" placeholder="Enter code">
+                    <button class="claim-btn" id="claim-code">APPLY</button>
+                </div>
             </div>
-            <div class="menu-item">
-                <div class="menu-icon">💰</div>
-                <div>Daily Bounty</div>
+            
+            <div class="menu-item" id="daily-bounty">
+                <div class="menu-left">
+                    <div class="menu-icon">💰</div>
+                    <div class="menu-text">Daily Bounty</div>
+                </div>
+                <div class="menu-right">
+                    <span class="reward-amount">+100 FC</span>
+                    <button class="claim-btn" id="claim-bounty">CLAIM</button>
+                </div>
             </div>
+            
             <div class="menu-item" id="quests-btn">
-                <div class="menu-icon">🏆</div>
-                <div>Achievements</div>
+                <div class="menu-left">
+                    <div class="menu-icon">🏆</div>
+                    <div class="menu-text">Achievements</div>
+                </div>
+                <div class="menu-right">
+                    <span class="reward-amount">View</span>
+                </div>
             </div>
         </div>
         
@@ -373,7 +455,7 @@
             <div class="progress-bar">
                 <div class="progress-fill"></div>
             </div>
-            <div class="progress-label" style="margin-top: 10px;">
+            <div class="progress-label-bottom">
                 <span>Frens</span>
                 <span>Boosts</span>
             </div>
@@ -524,6 +606,63 @@
                 alert('Play the game first to earn points!');
             }
         }
+        
+        // Daily Login function
+        document.getElementById('claim-daily').addEventListener('click', function() {
+            if (!this.classList.contains('claimed')) {
+                points += 50;
+                updatePointsDisplay();
+                this.textContent = 'CLAIMED';
+                this.classList.add('claimed');
+                alert('Daily login reward claimed! +50 FC');
+            } else {
+                alert('You have already claimed your daily login reward!');
+            }
+        });
+        
+        // Lucky Code function
+        document.getElementById('claim-code').addEventListener('click', function() {
+            const codeInput = document.querySelector('.code-input');
+            const code = codeInput.value.trim().toUpperCase();
+            
+            if (code === '') {
+                alert('Please enter a code!');
+                return;
+            }
+            
+            // Simple code validation
+            const validCodes = ['WELCOME100', 'NEWUSER50', 'BONUS25'];
+            
+            if (validCodes.includes(code)) {
+                const reward = code === 'WELCOME100' ? 100 : code === 'NEWUSER50' ? 50 : 25;
+                points += reward;
+                updatePointsDisplay();
+                alert(`Code applied successfully! +${reward} FC`);
+                codeInput.value = '';
+            } else {
+                alert('Invalid code! Please try another one.');
+            }
+        });
+        
+        // Daily Bounty function
+        document.getElementById('claim-bounty').addEventListener('click', function() {
+            if (!this.classList.contains('claimed')) {
+                points += 100;
+                updatePointsDisplay();
+                this.textContent = 'CLAIMED';
+                this.classList.add('claimed');
+                alert('Daily bounty claimed! +100 FC');
+            } else {
+                alert('You have already claimed your daily bounty!');
+            }
+        });
+        
+        // Profit claim function
+        document.getElementById('claim-profit').addEventListener('click', function() {
+            points += 10;
+            updatePointsDisplay();
+            alert('Profit claimed! +10 FC');
+        });
         
         // Initialize
         updatePointsDisplay();
