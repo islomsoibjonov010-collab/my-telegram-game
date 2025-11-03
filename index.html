@@ -1,207 +1,226 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>To'pcha Sakroq</title>
+    <title>Rangni Top</title>
     <style>
         body {
             margin: 0;
             padding: 10px;
-            background: #87CEEB;
+            background: linear-gradient(45deg, #667eea, #764ba2);
             text-align: center;
             font-family: Arial;
-            overflow: hidden;
+            color: white;
         }
         .game-container {
-            width: 300px;
-            height: 500px;
-            background: linear-gradient(to bottom, #87CEEB, #98FB98);
-            margin: 10px auto;
-            position: relative;
-            border: 3px solid #333;
+            max-width: 400px;
+            margin: 20px auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .target-color {
+            width: 200px;
+            height: 100px;
+            margin: 20px auto;
+            border: 3px solid white;
             border-radius: 10px;
-            overflow: hidden;
         }
-        .ball {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: radial-gradient(circle at 30% 30%, #FF6B6B, #C00);
-            border-radius: 50%;
-            bottom: 50px;
-            left: 130px;
-            transition: bottom 0.2s;
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
         }
-        .platform {
-            position: absolute;
+        .color-option {
             width: 80px;
-            height: 15px;
-            background: linear-gradient(to right, #4ECDC4, #556270);
+            height: 80px;
+            border: 3px solid white;
             border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
         }
         .score {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            margin: 15px;
+        }
+        .timer {
+            font-size: 20px;
             margin: 10px;
         }
-        .game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255,255,255,0.9);
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #333;
-        }
         button {
-            background: #FFD93D;
+            background: #ffd93d;
             color: #333;
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 25px;
+            border-radius: 25px;
             font-size: 16px;
             cursor: pointer;
-            margin: 5px;
+            margin: 10px;
             font-weight: bold;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px;
+            min-height: 25px;
+        }
+        @keyframes correct {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .correct {
+            animation: correct 0.5s ease;
         }
     </style>
 </head>
 <body>
-    <h1>🎮 To'pcha Sakroq</h1>
-    <div class="score">Ball: <span id="score">0</span></div>
+    <h1>🎨 RANGNI TOP</h1>
     
-    <div class="game-container" id="gameContainer">
-        <div class="ball" id="ball"></div>
-        <!-- Platformalar shu yerga paydo bo'ladi -->
+    <div class="game-container">
+        <div class="score">Ball: <span id="score">0</span></div>
+        <div class="timer">Vaqt: <span id="timer">30</span>s</div>
+        
+        <div class="target-color" id="targetColor"></div>
+        <p>Yuqoridagi rangni tanlang:</p>
+        
+        <div class="color-options" id="colorOptions">
+            <!-- Ranglar shu yerga paydo bo'ladi -->
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <button onclick="startGame()">🎮 Yangi O'yin</button>
     </div>
-    
-    <br>
-    <button onclick="startGame()">🎮 Boshlash</button>
-    <button onclick="jump()">⬆️ Sakrash</button>
 
     <script>
         let score = 0;
+        let timer = 30;
         let gameActive = false;
-        let ballBottom = 50;
-        let ballVelocity = 0;
-        let gravity = 0.5;
-        let platforms = [];
-        let gameSpeed = 3;
-
+        let timerInterval;
+        let currentTargetColor = '';
+        
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#FFD93D', '#6B5B95', '#88B04B',
+            '#FFA500', '#9370DB', '#00CED1', '#FF69B4', '#32CD32',
+            '#8A2BE2', '#DC143C', '#00FA9A', '#FF4500', '#1E90FF'
+        ];
+        
         function startGame() {
             gameActive = true;
             score = 0;
-            ballBottom = 50;
-            ballVelocity = 0;
-            platforms = [];
-            gameSpeed = 3;
+            timer = 30;
             
             document.getElementById('score').textContent = '0';
-            document.getElementById('gameContainer').innerHTML = '<div class="ball" id="ball"></div>';
+            document.getElementById('timer').textContent = '30';
+            document.getElementById('result').textContent = '';
             
-            // Birinchi platforma
-            createPlatform(150);
-            
-            // O'yin loop
-            gameLoop();
-        }
-
-        function createPlatform(bottom) {
-            const platform = document.createElement('div');
-            platform.className = 'platform';
-            platform.style.bottom = bottom + 'px';
-            platform.style.left = Math.random() * 220 + 'px'; // Tasodifiy joy
-            
-            document.getElementById('gameContainer').appendChild(platform);
-            platforms.push({
-                element: platform,
-                bottom: bottom
-            });
-        }
-
-        function jump() {
-            if (gameActive && ballBottom <= 100) {
-                ballVelocity = 12; // Sakrash kuchi
-            }
-        }
-
-        function gameLoop() {
-            if (!gameActive) return;
-
-            // To'p fizikasi
-            ballVelocity -= gravity;
-            ballBottom += ballVelocity;
-            
-            // Zamindan o'tmaslik
-            if (ballBottom < 0) {
-                ballBottom = 0;
-                ballVelocity = 0;
-            }
-            
-            // To'pni yangilash
-            document.getElementById('ball').style.bottom = ballBottom + 'px';
-            
-            // Platformalarni ko'tarish
-            platforms.forEach((platform, index) => {
-                platform.bottom += gameSpeed;
-                platform.element.style.bottom = platform.bottom + 'px';
-                
-                // To'p platformaga tushsa
-                if (platform.bottom <= ballBottom + 40 && 
-                    platform.bottom >= ballBottom + 30 &&
-                    parseInt(platform.element.style.left) <= 130 &&
-                    parseInt(platform.element.style.left) + 80 >= 130) {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameActive) {
+                    timer--;
+                    document.getElementById('timer').textContent = timer;
                     
-                    ballBottom = platform.bottom - 40;
-                    ballVelocity = 0;
-                    score++;
-                    document.getElementById('score').textContent = score;
-                    
-                    // Tezlik oshishi
-                    if (score % 5 === 0) {
-                        gameSpeed += 0.5;
+                    if (timer <= 0) {
+                        endGame();
                     }
                 }
-                
-                // Platforma tepaga chiqib ketsa
-                if (platform.bottom > 500) {
-                    platform.element.remove();
-                    platforms.splice(index, 1);
-                    createPlatform(0); // Yangi platforma
-                }
-            });
+            }, 1000);
             
-            // To'p pastga tushib ketsa
-            if (ballBottom > 500) {
-                endGame();
-                return;
+            generateColors();
+        }
+        
+        function generateColors() {
+            const colorOptions = document.getElementById('colorOptions');
+            colorOptions.innerHTML = '';
+            
+            // Tasodifiy 6 ta rang
+            const selectedColors = [];
+            while (selectedColors.length < 6) {
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                if (!selectedColors.includes(randomColor)) {
+                    selectedColors.push(randomColor);
+                }
             }
             
-            requestAnimationFrame(gameLoop);
+            // Maqsad rangni tanlash
+            currentTargetColor = selectedColors[Math.floor(Math.random() * 6)];
+            document.getElementById('targetColor').style.background = currentTargetColor;
+            
+            // Rang variantlarini yaratish
+            selectedColors.forEach(color => {
+                const colorOption = document.createElement('div');
+                colorOption.className = 'color-option';
+                colorOption.style.background = color;
+                colorOption.dataset.color = color;
+                
+                colorOption.addEventListener('click', () => {
+                    if (gameActive) {
+                        checkAnswer(color);
+                    }
+                });
+                
+                colorOptions.appendChild(colorOption);
+            });
         }
-
+        
+        function checkAnswer(selectedColor) {
+            if (selectedColor === currentTargetColor) {
+                // To'g'ri javob
+                score += 10;
+                document.getElementById('score').textContent = score;
+                document.getElementById('result').textContent = '✅ Toʻgʻri! +10 ball';
+                document.getElementById('result').style.color = '#4ECDC4';
+                
+                // To'g'ri rangni animatsiya qilish
+                const correctOption = document.querySelector(`[data-color="${selectedColor}"]`);
+                correctOption.classList.add('correct');
+                
+                // Yangi ranglar
+                setTimeout(() => {
+                    if (gameActive) {
+                        generateColors();
+                    }
+                }, 1000);
+                
+            } else {
+                // Noto'g'ri javob
+                score = Math.max(0, score - 5);
+                document.getElementById('score').textContent = score;
+                document.getElementById('result').textContent = '❌ Notoʻgʻri! -5 ball';
+                document.getElementById('result').style.color = '#FF6B6B';
+                
+                // Noto'g'ri rangni ko'rsatish
+                const wrongOption = document.querySelector(`[data-color="${selectedColor}"]`);
+                wrongOption.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    if (gameActive) {
+                        generateColors();
+                    }
+                }, 1000);
+            }
+            
+            // Tezlashtirish
+            if (score % 50 === 0 && timer > 5) {
+                timer -= 5;
+            }
+        }
+        
         function endGame() {
             gameActive = false;
+            clearInterval(timerInterval);
             
-            const gameOver = document.createElement('div');
-            gameOver.className = 'game-over';
-            gameOver.innerHTML = `
-                <h2>😔 O'yin Tugadi!</h2>
-                <p>Ball: <b>${score}</b></p>
-                <button onclick="startGame()">🔄 Qayta Boshlash</button>
+            document.getElementById('result').innerHTML = `
+                🎊 O'YIN TUGADI!<br>
+                Yakuniy ball: <b>${score}</b><br>
+                <small>Qayta o'ynash uchun "Yangi O'yin" ni bosing</small>
             `;
-            
-            document.getElementById('gameContainer').appendChild(gameOver);
         }
-
-        // Klaviatura boshqaruvi
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                jump();
-            }
-        });
-
+        
         // Boshlang'ich holat
         startGame();
     </script>
