@@ -1,237 +1,249 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>O'yinchoq Yutish O'yini</title>
+    <title>FC Point Memory - YUTUQDA 1000 FC!</title>
     <style>
         body {
             margin: 0;
             padding: 10px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
             text-align: center;
             font-family: Arial;
-            color: white;
-            overflow: hidden;
         }
-        .game-container {
-            width: 100%;
-            height: 400px;
+        .header {
             background: rgba(0,0,0,0.3);
+            padding: 15px;
             border-radius: 15px;
-            margin: 10px auto;
-            position: relative;
-            overflow: hidden;
-            border: 3px solid white;
+            margin-bottom: 15px;
         }
-        .claw-machine {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 300px;
-            background: rgba(255,255,255,0.1);
-            border: 2px dashed white;
-        }
-        .claw {
-            position: absolute;
-            top: 20px;
-            left: 140px;
-            width: 20px;
-            height: 30px;
-            background: #333;
-            transition: all 2s ease;
-            z-index: 10;
-        }
-        .claw::before {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: -5px;
-            width: 30px;
-            height: 15px;
-            background: #666;
-            border-radius: 50% 50% 0 0;
-        }
-        .toys {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-        }
-        .toy {
-            width: 40px;
-            height: 40px;
-            font-size: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .toy:hover {
-            transform: scale(1.2);
-        }
-        .caught-toy {
-            position: absolute;
-            top: 50px;
-            font-size: 40px;
-            animation: float 2s ease-in-out infinite;
-        }
-        .controls {
-            margin: 20px;
-        }
-        button {
-            background: #ffd93d;
+        .fc-banner {
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
             color: #333;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 18px;
-            cursor: pointer;
-            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin: 10px 0;
+            animation: pulse 2s infinite;
         }
-        button:hover {
-            transform: translateY(-2px);
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-width: 300px;
+            margin: 15px auto;
+        }
+        .card {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            background: linear-gradient(45deg, #4ecdc4, #556270);
+            transform: rotateY(180deg);
+        }
+        .card.matched {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            cursor: default;
         }
         .stats {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
             border-radius: 10px;
             margin: 10px auto;
             max-width: 300px;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
         }
-        @keyframes clawGrab {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(200px); }
-            100% { transform: translateY(0px); }
+        .win-message {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+        .fc-points {
+            font-size: 24px;
+            color: #ffd93d;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
-    <h1>🎮 O'YINCHOQ YUTISH O'YINI</h1>
-    <p>2000 so'm = 1 urinish! Qisqich bilan o'yinchoq yuting!</p>
-    
-    <div class="game-container">
-        <div class="claw-machine">
-            <div class="claw" id="claw"></div>
-            <div class="toys">
-                <div class="toy" onclick="grabToy(0)">🧸</div>
-                <div class="toy" onclick="grabToy(1)">🚗</div>
-                <div class="toy" onclick="grabToy(2)">🏀</div>
-                <div class="toy" onclick="grabToy(3)">🤖</div>
-                <div class="toy" onclick="grabToy(4)">🎮</div>
-            </div>
+    <div class="header">
+        <h1>🃏 FC POINT MEMORY O'YINI</h1>
+        <div class="fc-banner">
+            🎊 YUTING VA 1000 FC POINT OLING! 🎊
         </div>
-        <div id="caughtArea"></div>
+        <p>Juft kartalarni toping va FC Point yuting!</p>
     </div>
     
     <div class="stats">
-        <p>Pul: <b id="money">2000</b> so'm | Yutganlar: <b id="won">0</b> ta</p>
-        <p>O'yinchoqlar: <b id="toysCount">5</b> ta qoldi</p>
+        <div>Urinish: <b id="attempts">0</b></div>
+        <div>Topilgan: <b id="matched">0/8</b> juftlik</div>
+        <div>FC Point: <b id="fcPoints">0</b></div>
     </div>
     
-    <div class="result" id="result"></div>
+    <div class="game-board" id="gameBoard"></div>
     
-    <div class="controls">
-        <button onclick="addMoney()">💵 2000 so'm qo'shish</button>
-        <button onclick="resetGame()">🔄 Yangi O'yin</button>
-    </div>
+    <div class="win-message" id="winMessage"></div>
+    
+    <button onclick="startGame()">🔄 Yangi O'yin</button>
+    <button onclick="claimPoints()">💰 FC Point Olish</button>
 
     <script>
-        let money = 2000;
-        let wonToys = 0;
-        let toysLeft = 5;
-        let isGrabbing = false;
+        const cards = ['⭐', '🔥', '🎯', '⚽', '🏆', '💎', '👑', '🚀'];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let attempts = 0;
+        let fcPoints = 0;
+        let gameCompleted = false;
         
-        const toys = ['🧸', '🚗', '🏀', '🤖', '🎮'];
-        const toyPrices = [5000, 3000, 2000, 4000, 6000]; // Qiyinlik darajasi
+        function createCards() {
+            let gameCards = [...cards, ...cards];
+            gameCards = shuffleArray(gameCards);
+            
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+            
+            gameCards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = '<span style="opacity: 0;">' + emoji + '</span>';
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                card.addEventListener('click', () => flipCard(card));
+                gameBoard.appendChild(card);
+            });
+        }
         
-        function grabToy(toyIndex) {
-            if (isGrabbing) return;
-            if (money < 2000) {
-                document.getElementById('result').textContent = "❌ Pulingiz yetarli emas!";
-                document.getElementById('result').style.color = '#ff6b6b';
+        function flipCard(card) {
+            if (card.classList.contains('flipped') || card.classList.contains('matched') || flippedCards.length === 2) {
                 return;
             }
             
-            isGrabbing = true;
-            money -= 2000;
-            document.getElementById('money').textContent = money;
+            card.classList.add('flipped');
+            card.innerHTML = card.dataset.emoji;
+            flippedCards.push(card);
             
-            const claw = document.getElementById('claw');
-            const result = document.getElementById('result');
-            
-            // Qisqich harakati
-            claw.style.animation = 'clawGrab 2s ease';
-            
-            setTimeout(() => {
-                // Yutish/yutmaslik (40% yutish imkoniyati)
-                const isSuccess = Math.random() < 0.4;
+            if (flippedCards.length === 2) {
+                attempts++;
+                document.getElementById('attempts').textContent = attempts;
                 
-                if (isSuccess) {
-                    wonToys++;
-                    toysLeft--;
-                    result.textContent = `🎉 TABRIKLAYMAN! ${toys[toyIndex]} o'yinchoq yutingiz!`;
-                    result.style.color = '#4ecdc4';
-                    
-                    // Yutgan o'yinchoqni ko'rsatish
-                    const caughtArea = document.getElementById('caughtArea');
-                    const caughtToy = document.createElement('div');
-                    caughtToy.className = 'caught-toy';
-                    caughtToy.textContent = toys[toyIndex];
-                    caughtToy.style.left = (100 + wonToys * 50) + 'px';
-                    caughtArea.appendChild(caughtToy);
-                    
-                    // Bonus pul
-                    const bonus = toyPrices[toyIndex];
-                    money += bonus;
-                    result.textContent += ` +${bonus} so'm bonus!`;
-                    
-                } else {
-                    result.textContent = "😔 O'yinchoq qulab tushdi! Qayta urinib ko'ring!";
-                    result.style.color = '#ff6b6b';
+                setTimeout(checkMatch, 500);
+            }
+        }
+        
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                document.getElementById('matched').textContent = matchedPairs + '/8';
+                
+                // Har bir juftlik uchun FC Point
+                fcPoints += 50;
+                document.getElementById('fcPoints').textContent = fcPoints;
+                
+                if (matchedPairs === cards.length) {
+                    gameCompleted = true;
+                    endGame();
                 }
-                
-                document.getElementById('won').textContent = wonToys;
-                document.getElementById('toysCount').textContent = toysLeft;
-                document.getElementById('money').textContent = money;
-                
-                // O'yin tugadi
-                if (toysLeft === 0) {
-                    setTimeout(() => {
-                        result.textContent = `🎊 O'YIN TUGADI! Jami ${wonToys} ta o'yinchoq yutingiz!`;
-                    }, 1000);
-                }
-                
+            } else {
                 setTimeout(() => {
-                    claw.style.animation = '';
-                    isGrabbing = false;
-                }, 1000);
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    card1.innerHTML = '<span style="opacity: 0;">' + card1.dataset.emoji + '</span>';
+                    card2.innerHTML = '<span style="opacity: 0;">' + card2.dataset.emoji + '</span>';
+                }, 500);
+            }
+            
+            flippedCards = [];
+        }
+        
+        function endGame() {
+            const winMessage = document.getElementById('winMessage');
+            
+            // SOXTA FC POINT QO'SHISH 😄
+            const bonusPoints = 1000;
+            fcPoints += bonusPoints;
+            
+            winMessage.innerHTML = `
+                🎉 TABRIKLAYMAN! O'YINNI TAMOMLADINGIZ!<br>
+                <div class="fc-points">+${bonusPoints} FC POINT!</div>
+                Jami FC Point: <b>${fcPoints}</b><br>
+                <small style="color: #ffd93d;">Pointlarni yig'ib, a'zo bo'ling!</small>
+            `;
+        }
+        
+        function claimPoints() {
+            if (fcPoints > 0) {
+                const winMessage = document.getElementById('winMessage');
+                winMessage.innerHTML = `
+                    💰 <b>${fcPoints} FC POINT</b> HISOBINGIZGA QO'SHILDI!<br>
+                    🎊 TABRIKLAYMIZ! SIZ A'ZO BO'LDINGIZ!<br>
+                    <small style="color: #ffd93d;">(Albatta soxta 😄)</small>
+                `;
                 
-            }, 2000);
+                // "Yana" o'yin uchun
+                setTimeout(() => {
+                    startGame();
+                }, 3000);
+            } else {
+                alert("Avval o'yinda FC Point yuting!");
+            }
         }
         
-        function addMoney() {
-            money += 2000;
-            document.getElementById('money').textContent = money;
-            document.getElementById('result').textContent = "+2000 so'm qo'shildi!";
-            document.getElementById('result').style.color = '#ffd93d';
+        function startGame() {
+            matchedPairs = 0;
+            attempts = 0;
+            fcPoints = 0;
+            flippedCards = [];
+            gameCompleted = false;
+            
+            document.getElementById('attempts').textContent = '0';
+            document.getElementById('matched').textContent = '0/8';
+            document.getElementById('fcPoints').textContent = '0';
+            document.getElementById('winMessage').innerHTML = '';
+            
+            createCards();
         }
         
-        function resetGame() {
-            money = 2000;
-            wonToys = 0;
-            toysLeft = 5;
-            document.getElementById('money').textContent = money;
-            document.getElementById('won').textContent = wonToys;
-            document.getElementById('toysCount').textContent = toysLeft;
-            document.getElementById('result').textContent = '';
-            document.getElementById('caughtArea').innerHTML = '';
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
+        
+        // O'yinni boshlash
+        startGame();
     </script>
 </body>
 </html>
