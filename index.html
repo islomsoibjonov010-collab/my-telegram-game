@@ -1,228 +1,381 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rangni Top</title>
+    <title>FC Point - Kunlik Reward</title>
     <style>
         body {
             margin: 0;
             padding: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
             text-align: center;
             font-family: Arial;
             color: white;
         }
-        .game-container {
+        .container {
             max-width: 400px;
-            margin: 20px auto;
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
+            margin: 0 auto;
+        }
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
             border-radius: 15px;
+            margin-bottom: 15px;
         }
-        .target-color {
-            width: 200px;
-            height: 100px;
-            margin: 20px auto;
-            border: 3px solid white;
+        .fc-banner {
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+            color: #333;
+            padding: 10px;
             border-radius: 10px;
-        }
-        .color-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .color-option {
-            width: 80px;
-            height: 80px;
-            border: 3px solid white;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-        .score {
-            font-size: 24px;
             font-weight: bold;
-            margin: 15px;
+            margin: 10px 0;
         }
-        .timer {
-            font-size: 20px;
-            margin: 10px;
+        .stats {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .fc-points {
+            font-size: 28px;
+            color: #ffd93d;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .section {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
         }
         button {
-            background: #ffd93d;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
             color: #333;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            width: 100%;
+        }
+        .reward-day {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background: #333;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .reward-day.claimed {
+            background: #4ecdc4;
+        }
+        .reward-day.today {
+            background: #ffd93d;
+            color: #333;
+            font-weight: bold;
+        }
+        .friend-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mini-game {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .game-button {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
             cursor: pointer;
             margin: 10px;
-            font-weight: bold;
         }
-        .result {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px;
-            min-height: 25px;
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
         }
-        @keyframes correct {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-        .correct {
-            animation: correct 0.5s ease;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4ecdc4, #00b09b);
+            border-radius: 10px;
+            transition: width 0.3s;
         }
     </style>
 </head>
 <body>
-    <h1>🎨 RANGNI TOP</h1>
-    
-    <div class="game-container">
-        <div class="score">Ball: <span id="score">0</span></div>
-        <div class="timer">Vaqt: <span id="timer">30</span>s</div>
-        
-        <div class="target-color" id="targetColor"></div>
-        <p>Yuqoridagi rangni tanlang:</p>
-        
-        <div class="color-options" id="colorOptions">
-            <!-- Ranglar shu yerga paydo bo'ladi -->
+    <div class="container">
+        <div class="header">
+            <h1>⚽ FC POINT YIG'ISH</h1>
+            <div class="fc-banner">🎊 KUNLIK REWARD + DO'ST TAKLIF + MINI O'YIN</div>
         </div>
-        
-        <div class="result" id="result"></div>
-        
-        <button onclick="startGame()">🎮 Yangi O'yin</button>
+
+        <!-- ASOSIY STATISTIKA -->
+        <div class="stats">
+            <div>Jami FC Point:</div>
+            <div class="fc-points" id="totalPoints">0</div>
+            <div>Do'stlar: <b id="friendCount">0</b> ta</div>
+        </div>
+
+        <!-- KUNLIK REWARD -->
+        <div class="section">
+            <h3>📅 Kunlik Reward</h3>
+            <div>
+                <div class="reward-day" onclick="claimDaily(1)">1<br>100</div>
+                <div class="reward-day" onclick="claimDaily(2)">2<br>200</div>
+                <div class="reward-day" onclick="claimDaily(3)">3<br>300</div>
+                <div class="reward-day" onclick="claimDaily(4)">4<br>400</div>
+                <div class="reward-day" onclick="claimDaily(5)">5<br>500</div>
+                <div class="reward-day" onclick="claimDaily(6)">6<br>800</div>
+                <div class="reward-day" onclick="claimDaily(7)">7<br>1000</div>
+            </div>
+            <p>Ketma-ket kelgan kunlar: <b id="streak">0</b></p>
+        </div>
+
+        <!-- DO'ST TAKLIF -->
+        <div class="section">
+            <h3>👥 Do'st Taklif</h3>
+            <p>Har do'st uchun: <b>100 FC Point</b></p>
+            <div id="friendsList">
+                <!-- Do'stlar ro'yxati -->
+            </div>
+            <button onclick="addFriend()">➕ Do'st Qo'shish</button>
+            <button onclick="shareLink()">📤 Taklif Linkini Ulashish</button>
+        </div>
+
+        <!-- MINI O'YIN -->
+        <div class="section">
+            <h3>🎮 Mini O'yin</h3>
+            <p>Har do'st uchun 3 marta o'ynash mumkin</p>
+            <p>O'yinlar qoldi: <b id="gamesLeft">0</b></p>
+            
+            <div class="mini-game">
+                <h4>⚽ To'pni Urish</h4>
+                <p>To'pni bosing va FC Point yuting!</p>
+                <button class="game-button" onclick="playMiniGame()">⚽</button>
+                <p>Oxirgi natija: <b id="gameResult">-</b></p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="gameProgress" style="width: 0%"></div>
+            </div>
+            <p>Mini o'yindan yig'ilgan: <b id="gamePoints">0</b> FC Point</p>
+        </div>
+
+        <!-- YAKUNIY STATISTIKA -->
+        <div class="stats">
+            <h3>📊 Statistika</h3>
+            <p>Kunlik Reward: <b id="dailyEarned">0</b> point</p>
+            <p>Do'stlardan: <b id="friendEarned">0</b> point</p>
+            <p>Mini O'yindan: <b id="gameEarned">0</b> point</p>
+            <button onclick="resetAll()">🔄 Hammasini Yangilash</button>
+        </div>
     </div>
 
     <script>
-        let score = 0;
-        let timer = 30;
-        let gameActive = false;
-        let timerInterval;
-        let currentTargetColor = '';
-        
-        const colors = [
-            '#FF6B6B', '#4ECDC4', '#FFD93D', '#6B5B95', '#88B04B',
-            '#FFA500', '#9370DB', '#00CED1', '#FF69B4', '#32CD32',
-            '#8A2BE2', '#DC143C', '#00FA9A', '#FF4500', '#1E90FF'
-        ];
-        
-        function startGame() {
-            gameActive = true;
-            score = 0;
-            timer = 30;
-            
-            document.getElementById('score').textContent = '0';
-            document.getElementById('timer').textContent = '30';
-            document.getElementById('result').textContent = '';
-            
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (gameActive) {
-                    timer--;
-                    document.getElementById('timer').textContent = timer;
-                    
-                    if (timer <= 0) {
-                        endGame();
-                    }
-                }
-            }, 1000);
-            
-            generateColors();
+        // O'YINCHI MA'LUMOTLARI
+        let playerData = {
+            totalPoints: 0,
+            friends: [],
+            dailyStreak: 0,
+            lastDaily: null,
+            gamesPlayed: 0,
+            gamePoints: 0,
+            dailyEarned: 0,
+            friendEarned: 0
+        };
+
+        // KUNLIK REWARD MIQDORLARI
+        const dailyRewards = [100, 200, 300, 400, 500, 800, 1000];
+
+        // SAQLASH
+        function saveData() {
+            localStorage.setItem('fcPointData', JSON.stringify(playerData));
         }
-        
-        function generateColors() {
-            const colorOptions = document.getElementById('colorOptions');
-            colorOptions.innerHTML = '';
-            
-            // Tasodifiy 6 ta rang
-            const selectedColors = [];
-            while (selectedColors.length < 6) {
-                const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                if (!selectedColors.includes(randomColor)) {
-                    selectedColors.push(randomColor);
-                }
+
+        // YUKLASH
+        function loadData() {
+            const saved = localStorage.getItem('fcPointData');
+            if (saved) {
+                playerData = JSON.parse(saved);
             }
+            updateDisplay();
+        }
+
+        // KUNLIK REWARD OLISH
+        function claimDaily(day) {
+            const today = new Date().toDateString();
             
-            // Maqsad rangni tanlash
-            currentTargetColor = selectedColors[Math.floor(Math.random() * 6)];
-            document.getElementById('targetColor').style.background = currentTargetColor;
+            // Bir kunda bir marta
+            if (playerData.lastDaily === today) {
+                alert("⚠️ Bugun allaqachon reward olgansiz!");
+                return;
+            }
+
+            // Ketma-ketlikni tekshirish
+            if (day === playerData.dailyStreak + 1) {
+                playerData.dailyStreak++;
+            } else {
+                playerData.dailyStreak = 1;
+            }
+
+            const reward = dailyRewards[day - 1] || 100;
+            playerData.totalPoints += reward;
+            playerData.dailyEarned += reward;
+            playerData.lastDaily = today;
+
+            // Reward kunini belgilash
+            document.querySelectorAll('.reward-day')[day - 1].classList.add('claimed');
             
-            // Rang variantlarini yaratish
-            selectedColors.forEach(color => {
-                const colorOption = document.createElement('div');
-                colorOption.className = 'color-option';
-                colorOption.style.background = color;
-                colorOption.dataset.color = color;
+            updateDisplay();
+            saveData();
+            
+            alert(`🎉 ${day}-kun reward: ${reward} FC Point!`);
+        }
+
+        // DO'ST QO'SHISH
+        function addFriend() {
+            const friendName = prompt("Do'stingiz ismini kiriting:");
+            if (friendName && friendName.trim() !== '') {
+                const newFriend = {
+                    id: Date.now(),
+                    name: friendName,
+                    joined: new Date().toLocaleDateString(),
+                    gamesPlayed: 0
+                };
                 
-                colorOption.addEventListener('click', () => {
-                    if (gameActive) {
-                        checkAnswer(color);
-                    }
-                });
+                playerData.friends.push(newFriend);
+                playerData.totalPoints += 100;
+                playerData.friendEarned += 100;
                 
-                colorOptions.appendChild(colorOption);
+                updateDisplay();
+                saveData();
+                
+                alert(`✅ ${friendName} do'st qo'shildi! +100 FC Point`);
+            }
+        }
+
+        // MINI O'YIN
+        function playMiniGame() {
+            const maxGames = playerData.friends.length * 3;
+            
+            if (playerData.gamesPlayed >= maxGames) {
+                alert("⚠️ Bugun uchun mini o'yinlar tugadi! Ertaga yana o'ynashingiz mumkin.");
+                return;
+            }
+
+            // Tasodifiy FC Point (50-300 oralig'ida)
+            const points = Math.floor(Math.random() * 251) + 50;
+            playerData.totalPoints += points;
+            playerData.gamePoints += points;
+            playerData.gamesPlayed++;
+
+            // Progress yangilash
+            const progress = (playerData.gamesPlayed / maxGames) * 100;
+            document.getElementById('gameProgress').style.width = progress + '%';
+
+            // Natijani ko'rsatish
+            document.getElementById('gameResult').textContent = `+${points} FC Point`;
+            document.getElementById('gameResult').style.color = '#4ecdc4';
+
+            // To'p animatsiyasi
+            const ball = document.querySelector('.game-button');
+            ball.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                ball.style.transform = 'scale(1)';
+            }, 200);
+
+            updateDisplay();
+            saveData();
+        }
+
+        // TAKLIF LINKI
+        function shareLink() {
+            const link = "https://t.me/your_bot_link"; // O'z bot linkingizni qo'ying
+            alert(`📤 Taklif linki: ${link}\n\nDo'stlaringizga ushbu linkni yuboring va ular qo'shilganda har biri uchun 100 FC Point oling!`);
+        }
+
+        // YANGILASH
+        function updateDisplay() {
+            document.getElementById('totalPoints').textContent = playerData.totalPoints;
+            document.getElementById('friendCount').textContent = playerData.friends.length;
+            document.getElementById('streak').textContent = playerData.dailyStreak;
+            document.getElementById('gamesLeft').textContent = Math.max(0, (playerData.friends.length * 3) - playerData.gamesPlayed);
+            document.getElementById('gamePoints').textContent = playerData.gamePoints;
+            document.getElementById('dailyEarned').textContent = playerData.dailyEarned;
+            document.getElementById('friendEarned').textContent = playerData.friendEarned;
+            document.getElementById('gameEarned').textContent = playerData.gamePoints;
+
+            // Do'stlar ro'yxati
+            const friendsList = document.getElementById('friendsList');
+            friendsList.innerHTML = '';
+            playerData.friends.forEach(friend => {
+                const friendItem = document.createElement('div');
+                friendItem.className = 'friend-item';
+                friendItem.innerHTML = `
+                    <div>👤 ${friend.name}</div>
+                    <div>${friend.joined}</div>
+                `;
+                friendsList.appendChild(friendItem);
+            });
+
+            // Bugungi kunni belgilash
+            const today = new Date().getDate();
+            document.querySelectorAll('.reward-day').forEach((day, index) => {
+                day.classList.remove('today');
+                if (index + 1 === playerData.dailyStreak + 1) {
+                    day.classList.add('today');
+                }
             });
         }
-        
-        function checkAnswer(selectedColor) {
-            if (selectedColor === currentTargetColor) {
-                // To'g'ri javob
-                score += 10;
-                document.getElementById('score').textContent = score;
-                document.getElementById('result').textContent = '✅ Toʻgʻri! +10 ball';
-                document.getElementById('result').style.color = '#4ECDC4';
-                
-                // To'g'ri rangni animatsiya qilish
-                const correctOption = document.querySelector(`[data-color="${selectedColor}"]`);
-                correctOption.classList.add('correct');
-                
-                // Yangi ranglar
-                setTimeout(() => {
-                    if (gameActive) {
-                        generateColors();
-                    }
-                }, 1000);
-                
-            } else {
-                // Noto'g'ri javob
-                score = Math.max(0, score - 5);
-                document.getElementById('score').textContent = score;
-                document.getElementById('result').textContent = '❌ Notoʻgʻri! -5 ball';
-                document.getElementById('result').style.color = '#FF6B6B';
-                
-                // Noto'g'ri rangni ko'rsatish
-                const wrongOption = document.querySelector(`[data-color="${selectedColor}"]`);
-                wrongOption.style.opacity = '0.5';
-                
-                setTimeout(() => {
-                    if (gameActive) {
-                        generateColors();
-                    }
-                }, 1000);
-            }
-            
-            // Tezlashtirish
-            if (score % 50 === 0 && timer > 5) {
-                timer -= 5;
+
+        // YANGILASH
+        function resetAll() {
+            if (confirm("Hamma ma'lumotlarni yangilamoqchimisiz? Bu joriy progressni o'chiradi.")) {
+                playerData = {
+                    totalPoints: 0,
+                    friends: [],
+                    dailyStreak: 0,
+                    lastDaily: null,
+                    gamesPlayed: 0,
+                    gamePoints: 0,
+                    dailyEarned: 0,
+                    friendEarned: 0
+                };
+                updateDisplay();
+                saveData();
+                alert("🔄 Hammasi yangilandi!");
             }
         }
+
+        // DASTURNI BOSHLASH
+        loadData();
         
-        function endGame() {
-            gameActive = false;
-            clearInterval(timerInterval);
-            
-            document.getElementById('result').innerHTML = `
-                🎊 O'YIN TUGADI!<br>
-                Yakuniy ball: <b>${score}</b><br>
-                <small>Qayta o'ynash uchun "Yangi O'yin" ni bosing</small>
-            `;
-        }
-        
-        // Boshlang'ich holat
-        startGame();
+        // Har 24 soatda mini o'yinlarni yangilash
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                playerData.gamesPlayed = 0;
+                updateDisplay();
+                saveData();
+            }
+        }, 60000); // Har daqiqa tekshiradi
     </script>
 </body>
 </html>
