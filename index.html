@@ -1,91 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Nishonni Urish O'yini</title>
+    <title>To'pcha Sakroq</title>
     <style>
         body {
             margin: 0;
             padding: 10px;
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
-            color: white;
+            background: #87CEEB;
             text-align: center;
             font-family: Arial;
             overflow: hidden;
         }
-        .header {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
         .game-container {
-            width: 100%;
-            height: 400px;
-            background: rgba(0,0,0,0.2);
-            border: 3px solid white;
-            border-radius: 15px;
+            width: 300px;
+            height: 500px;
+            background: linear-gradient(to bottom, #87CEEB, #98FB98);
             margin: 10px auto;
             position: relative;
+            border: 3px solid #333;
+            border-radius: 10px;
             overflow: hidden;
         }
-        .target {
+        .ball {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #ff6b6b, #c00);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #FF6B6B, #C00);
             border-radius: 50%;
-            cursor: crosshair;
-            transition: transform 0.1s;
-            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+            bottom: 50px;
+            left: 130px;
+            transition: bottom 0.2s;
         }
-        .target:hover {
-            transform: scale(1.1);
-        }
-        .target.moving {
-            animation: float 3s ease-in-out infinite;
-        }
-        .crosshair {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            pointer-events: none;
-            z-index: 1000;
-            font-size: 20px;
-        }
-        .stats {
-            background: rgba(255,255,255,0.1);
-            padding: 10px;
+        .platform {
+            position: absolute;
+            width: 80px;
+            height: 15px;
+            background: linear-gradient(to right, #4ECDC4, #556270);
             border-radius: 10px;
-            margin: 10px auto;
-            max-width: 300px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
         }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-value {
+        .score {
             font-size: 24px;
-            color: #ffd93d;
             font-weight: bold;
-        }
-        button {
-            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
             color: #333;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
-            font-weight: bold;
-        }
-        .level-indicator {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
             margin: 10px;
         }
         .game-over {
@@ -93,246 +49,161 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            padding: 30px;
-            border-radius: 15px;
-            border: 3px solid #ffd93d;
-            z-index: 100;
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            25% { transform: translateY(-20px) translateX(10px); }
-            50% { transform: translateY(0px) translateX(20px); }
-            75% { transform: translateY(20px) translateX(10px); }
-        }
-        @keyframes hit {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.7; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        .hit-effect {
-            animation: hit 0.5s ease-out;
+        button {
+            background: #FFD93D;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎯 NISHONNI URISH O'YINI</h1>
-        <p>Nishonlarni tezda bosing! Vaqt tugamasdan!</p>
-        <div class="level-indicator">Daraja: <b id="level">1</b></div>
-    </div>
-    
-    <div class="stats">
-        <div class="stat-item">
-            <div>Urish</div>
-            <div class="stat-value" id="score">0</div>
-        </div>
-        <div class="stat-item">
-            <div>O'tkazib</div>
-            <div class="stat-value" id="missed">0</div>
-        </div>
-        <div class="stat-item">
-            <div>Vaqt</div>
-            <div class="stat-value" id="timer">30</div>
-        </div>
-    </div>
+    <h1>🎮 To'pcha Sakroq</h1>
+    <div class="score">Ball: <span id="score">0</span></div>
     
     <div class="game-container" id="gameContainer">
-        <!-- Nishonlar shu yerga paydo bo'ladi -->
+        <div class="ball" id="ball"></div>
+        <!-- Platformalar shu yerga paydo bo'ladi -->
     </div>
     
-    <div class="controls">
-        <button onclick="startGame()">🎮 O'yinni Boshlash</button>
-        <button onclick="pauseGame()">⏸️ Pauza</button>
-        <button onclick="resetGame()">🔄 Yangilash</button>
-    </div>
+    <br>
+    <button onclick="startGame()">🎮 Boshlash</button>
+    <button onclick="jump()">⬆️ Sakrash</button>
 
     <script>
         let score = 0;
-        let missed = 0;
-        let timer = 30;
-        let level = 1;
         let gameActive = false;
-        let timerInterval;
-        let targetInterval;
-        
-        function createTarget() {
+        let ballBottom = 50;
+        let ballVelocity = 0;
+        let gravity = 0.5;
+        let platforms = [];
+        let gameSpeed = 3;
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            ballBottom = 50;
+            ballVelocity = 0;
+            platforms = [];
+            gameSpeed = 3;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('gameContainer').innerHTML = '<div class="ball" id="ball"></div>';
+            
+            // Birinchi platforma
+            createPlatform(150);
+            
+            // O'yin loop
+            gameLoop();
+        }
+
+        function createPlatform(bottom) {
+            const platform = document.createElement('div');
+            platform.className = 'platform';
+            platform.style.bottom = bottom + 'px';
+            platform.style.left = Math.random() * 220 + 'px'; // Tasodifiy joy
+            
+            document.getElementById('gameContainer').appendChild(platform);
+            platforms.push({
+                element: platform,
+                bottom: bottom
+            });
+        }
+
+        function jump() {
+            if (gameActive && ballBottom <= 100) {
+                ballVelocity = 12; // Sakrash kuchi
+            }
+        }
+
+        function gameLoop() {
             if (!gameActive) return;
+
+            // To'p fizikasi
+            ballVelocity -= gravity;
+            ballBottom += ballVelocity;
             
-            const gameContainer = document.getElementById('gameContainer');
-            const target = document.createElement('div');
-            target.className = 'target moving';
+            // Zamindan o'tmaslik
+            if (ballBottom < 0) {
+                ballBottom = 0;
+                ballVelocity = 0;
+            }
             
-            // Tasodifiy pozitsiya
-            const x = Math.random() * (gameContainer.offsetWidth - 50);
-            const y = Math.random() * (gameContainer.offsetHeight - 50);
+            // To'pni yangilash
+            document.getElementById('ball').style.bottom = ballBottom + 'px';
             
-            target.style.left = x + 'px';
-            target.style.top = y + 'px';
-            
-            // Nishon tezligi (darajaga qarab)
-            const speed = 2000 + (level * 500); // Daraja oshgani sayin tezlashadi
-            
-            target.addEventListener('click', function() {
-                if (gameActive) {
+            // Platformalarni ko'tarish
+            platforms.forEach((platform, index) => {
+                platform.bottom += gameSpeed;
+                platform.element.style.bottom = platform.bottom + 'px';
+                
+                // To'p platformaga tushsa
+                if (platform.bottom <= ballBottom + 40 && 
+                    platform.bottom >= ballBottom + 30 &&
+                    parseInt(platform.element.style.left) <= 130 &&
+                    parseInt(platform.element.style.left) + 80 >= 130) {
+                    
+                    ballBottom = platform.bottom - 40;
+                    ballVelocity = 0;
                     score++;
                     document.getElementById('score').textContent = score;
                     
-                    // Urilgan effekt
-                    this.classList.add('hit-effect');
-                    this.style.background = 'radial-gradient(circle, #4ecdc4, #00b09b)';
-                    
-                    setTimeout(() => {
-                        this.remove();
-                    }, 500);
-                    
-                    // Daraja oshirish
-                    if (score % 10 === 0) {
-                        levelUp();
+                    // Tezlik oshishi
+                    if (score % 5 === 0) {
+                        gameSpeed += 0.5;
                     }
+                }
+                
+                // Platforma tepaga chiqib ketsa
+                if (platform.bottom > 500) {
+                    platform.element.remove();
+                    platforms.splice(index, 1);
+                    createPlatform(0); // Yangi platforma
                 }
             });
             
-            // Nishonning yo'qolish vaqti
-            setTimeout(() => {
-                if (target.parentNode && gameActive) {
-                    target.remove();
-                    missed++;
-                    document.getElementById('missed').textContent = missed;
-                    
-                    // O'yin tugashi (juda ko'p o'tkazib yuborsa)
-                    if (missed >= 15) {
-                        endGame();
-                    }
-                }
-            }, speed);
-            
-            gameContainer.appendChild(target);
-        }
-        
-        function levelUp() {
-            level++;
-            document.getElementById('level').textContent = level;
-            
-            // Yangi daraja xabari
-            const message = document.createElement('div');
-            message.textContent = `🎉 Daraja ${level} ga oshdi!`;
-            message.style.cssText = `
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(255,255,255,0.9);
-                color: #333;
-                padding: 10px 20px;
-                border-radius: 10px;
-                font-weight: bold;
-                z-index: 50;
-            `;
-            
-            document.getElementById('gameContainer').appendChild(message);
-            
-            setTimeout(() => {
-                message.remove();
-            }, 2000);
-        }
-        
-        function startGame() {
-            if (gameActive) return;
-            
-            gameActive = true;
-            score = 0;
-            missed = 0;
-            timer = 30;
-            level = 1;
-            
-            document.getElementById('score').textContent = '0';
-            document.getElementById('missed').textContent = '0';
-            document.getElementById('timer').textContent = '30';
-            document.getElementById('level').textContent = '1';
-            
-            // Vaqt hisobi
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (gameActive) {
-                    timer--;
-                    document.getElementById('timer').textContent = timer;
-                    
-                    if (timer <= 0) {
-                        endGame();
-                    }
-                }
-            }, 1000);
-            
-            // Nishon yaratish
-            clearInterval(targetInterval);
-            targetInterval = setInterval(createTarget, 800 - (level * 100));
-            
-            // Boshlang'ich nishonlar
-            for (let i = 0; i < 3; i++) {
-                setTimeout(createTarget, i * 500);
+            // To'p pastga tushib ketsa
+            if (ballBottom > 500) {
+                endGame();
+                return;
             }
+            
+            requestAnimationFrame(gameLoop);
         }
-        
-        function pauseGame() {
-            gameActive = !gameActive;
-            if (!gameActive) {
-                clearInterval(timerInterval);
-                clearInterval(targetInterval);
-            } else {
-                startGame();
-            }
-        }
-        
+
         function endGame() {
             gameActive = false;
-            clearInterval(timerInterval);
-            clearInterval(targetInterval);
-            
-            const gameContainer = document.getElementById('gameContainer');
-            gameContainer.innerHTML = '';
             
             const gameOver = document.createElement('div');
             gameOver.className = 'game-over';
             gameOver.innerHTML = `
-                <h2>🎯 O'YIN TUGADI!</h2>
-                <p>Urgan nishonlar: <b>${score}</b></p>
-                <p>O'tkazib yuborilgan: <b>${missed}</b></p>
-                <p>Daraja: <b>${level}</b></p>
-                <p>Yakuniy ball: <b style="color: #ffd93d">${score * level}</b></p>
-                <button onclick="startGame()" style="margin-top: 15px;">🔄 Qayta Boshlash</button>
+                <h2>😔 O'yin Tugadi!</h2>
+                <p>Ball: <b>${score}</b></p>
+                <button onclick="startGame()">🔄 Qayta Boshlash</button>
             `;
             
-            gameContainer.appendChild(gameOver);
+            document.getElementById('gameContainer').appendChild(gameOver);
         }
-        
-        function resetGame() {
-            gameActive = false;
-            clearInterval(timerInterval);
-            clearInterval(targetInterval);
-            
-            document.getElementById('gameContainer').innerHTML = '';
-            document.getElementById('score').textContent = '0';
-            document.getElementById('missed').textContent = '0';
-            document.getElementById('timer').textContent = '30';
-            document.getElementById('level').textContent = '1';
-        }
-        
-        // Sichqoncha harakatini kuzatish
-        document.addEventListener('mousemove', (e) => {
-            const crosshair = document.querySelector('.crosshair') || document.createElement('div');
-            crosshair.className = 'crosshair';
-            crosshair.textContent = '🎯';
-            crosshair.style.left = (e.pageX - 10) + 'px';
-            crosshair.style.top = (e.pageY - 10) + 'px';
-            
-            if (!document.querySelector('.crosshair')) {
-                document.body.appendChild(crosshair);
+
+        // Klaviatura boshqaruvi
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                jump();
             }
         });
-        
-        // O'yinni boshlash
-        resetGame();
+
+        // Boshlang'ich holat
+        startGame();
     </script>
 </body>
 </html>
